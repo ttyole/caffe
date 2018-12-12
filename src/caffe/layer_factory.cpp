@@ -15,6 +15,7 @@
 #include "caffe/layers/sigmoid_layer.hpp"
 #include "caffe/layers/softmax_layer.hpp"
 #include "caffe/layers/tanh_layer.hpp"
+#include "caffe/layers/trunc_layer.hpp"
 #include "caffe/proto/caffe.pb.h"
 
 #ifdef USE_CUDNN
@@ -241,6 +242,31 @@ shared_ptr<Layer<Dtype> > GetSoftmaxLayer(const LayerParameter& param) {
 }
 
 REGISTER_LAYER_CREATOR(Softmax, GetSoftmaxLayer);
+
+// Get trunc layer according to engine.
+template <typename Dtype>
+shared_ptr<Layer<Dtype> > GetTruncLayer(const LayerParameter& param) {
+  // TruncParameter_Engine engine = param.trunc_param().engine();
+  // if (engine == TruncParameter_Engine_DEFAULT) {
+  //   engine = TruncParameter_Engine_CAFFE;
+// #ifdef USE_CUDNN
+//     engine = ReLUParameter_Engine_CUDNN;
+// #endif
+  // }
+  // if (engine == TruncParameter_Engine_CAFFE) {
+    return shared_ptr<Layer<Dtype> >(new TruncLayer<Dtype>(param));
+// #ifdef USE_CUDNN
+//   } else if (engine == ReLUParameter_Engine_CUDNN) {
+//     return shared_ptr<Layer<Dtype> >(new CuDNNReLULayer<Dtype>(param));
+// #endif
+  // } else {
+  //   LOG(FATAL) << "Layer " << param.name() << " has unknown engine.";
+  //   throw;  // Avoids missing return warning
+  // }
+}
+
+REGISTER_LAYER_CREATOR(Trunc, GetTruncLayer);
+
 
 // Get tanh layer according to engine.
 template <typename Dtype>
